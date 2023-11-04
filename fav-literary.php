@@ -13,6 +13,8 @@ class UlubioneSettings
         add_action('admin_menu', array($this, 'adminPage'));
         add_action('admin_init', array($this, 'registerSettings'));
         add_filter('the_content', array($this, 'ifWrap'));
+        register_activation_hook(__FILE__, array($this, 'createPage'));
+
     }
 
     function adminPage()
@@ -92,6 +94,25 @@ class UlubioneSettings
         $html .= '</div>';
 
         return $content . $html;
+
+    }
+    // Create Page after load plugin
+    function createPage()
+    {
+        $pageTitle = 'Ulubione';
+        // Check if page exist
+        if (get_page_by_title($pageTitle) === null) {
+            $pageUlubione = array(
+                'post_title' => $pageTitle,
+                'post_content' => '',
+                'post_status' => 'publish',
+                'post_type' => 'page',
+                'page_template' => 'page-ulubione.php'
+
+
+            );
+            $insertPage   = wp_insert_post($pageUlubione);
+        }
 
     }
 }
