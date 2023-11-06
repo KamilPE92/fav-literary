@@ -99,22 +99,24 @@ class UlubioneSettings
     // Create Page after load plugin
     function createPage()
     {
-        $pageTitle = 'Ulubione';
-        // Check if page exist
-        if (get_page_by_title($pageTitle) === null) {
-            $pageUlubione = array(
-                'post_title' => $pageTitle,
-                'post_content' => '',
-                'post_status' => 'publish',
-                'post_type' => 'page',
-                'page_template' => 'page-ulubione.php'
-
-
-            );
-            $insertPage   = wp_insert_post($pageUlubione);
+        if (!is_admin()) {
+            ob_start();
+            include(__DIR__ . '/../ulubione.php');
+            return ob_get_clean();
         }
+        $my_post = array(
+            'post_title' => wp_strip_all_tags('My Custom Page'),
+            'post_content' => '[shortcode]',
+            'post_status' => 'publish',
+            'post_author' => 1,
+            'post_type' => 'page',
+            'page_template' => 'page-ulubione.php'
+        );
 
+        // Insert the post into the database
+        wp_insert_post($my_post);
     }
+
 }
 
 $ulubioneSettings = new UlubioneSettings();
