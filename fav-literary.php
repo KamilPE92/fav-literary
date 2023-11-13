@@ -11,10 +11,11 @@ class UlubioneSettings
     function __construct()
     {
         add_action('admin_menu', array($this, 'adminPage'));
-        add_action('wp_enqueue_scripts', array($this, 'front_scripts'), 99);
         add_action('admin_init', array($this, 'registerSettings'));
         add_filter('the_content', array($this, 'ifWrap'));
 
+
+        add_action('wp_enqueue_scripts', array($this, 'add_scripts'));
     }
 
     function adminPage()
@@ -87,7 +88,7 @@ class UlubioneSettings
 
     function displayHTML($content)
     {
-        $html = '<div class="ulubione-wrapper" >';
+        $html = '<div class="ulubione-wrapper">';
         $html .= '<i class="fa fa-star" id="icon-star"></i>';
         $html .= '<i class="fa fa-heart" id="icon-heart"></i>';
         $html .= '<i class="fa fa-check" id="icon-check"></i>';
@@ -97,14 +98,11 @@ class UlubioneSettings
 
     }
 
-
-    function front_scripts()
+    function add_scripts()
     {
-        wp_enqueue_style('style_ulubione', plugins_url('/assets\style.css', __FILE__));
-        wp_enqueue_script('scripts_ulubione', plugins_url('/assets\main.js', __FILE__));
-
+        wp_enqueue_script('ulubionejs', plugins_url('/assets/main.js', __FILE__));
+        wp_enqueue_style('ulubionestyle', plugins_url('/assets/style.css', __FILE__));
     }
-
 
 }
 
@@ -112,11 +110,6 @@ $ulubioneSettings = new UlubioneSettings();
 
 class TemplateManager
 {
-    public function init()
-    {
-        add_filter('theme_page_templates', array($this, 'templateRegister'));
-        add_filter('template_include', array($this, 'templateSelect'), 99);
-    }
     public function templateArray($templates)
     {
         $templates['ulubione.php'] = 'ulubione-page';
@@ -141,10 +134,11 @@ class TemplateManager
         }
         return $template;
     }
-    public function display_name_user()
+
+    public function init()
     {
-        $current_user = wp_get_current_user();
-        printf(__('Ulubione: %s', 'textdomain'), esc_html($current_user->display_name)) . '<br />';
+        add_filter('theme_page_templates', array($this, 'templateRegister'));
+        add_filter('template_include', array($this, 'templateSelect'), 99);
     }
 }
 
