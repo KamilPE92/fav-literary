@@ -11,9 +11,9 @@ class UlubioneSettings
     function __construct()
     {
         add_action('admin_menu', array($this, 'adminPage'));
+        add_action('wp_enqueue_scripts', array($this, 'front_scripts'), 99);
         add_action('admin_init', array($this, 'registerSettings'));
         add_filter('the_content', array($this, 'ifWrap'));
-        register_activation_hook(__FILE__, array($this, 'createPage'));
 
     }
 
@@ -87,7 +87,7 @@ class UlubioneSettings
 
     function displayHTML($content)
     {
-        $html = '<div class="test" style="text-align: center;">';
+        $html = '<div class="ulubione-wrapper" >';
         $html .= '<i class="fa fa-star" id="icon-star"></i>';
         $html .= '<i class="fa fa-heart" id="icon-heart"></i>';
         $html .= '<i class="fa fa-check" id="icon-check"></i>';
@@ -96,37 +96,57 @@ class UlubioneSettings
         return $content . $html;
 
     }
-    function createPage()
+
+
+    function front_scripts()
     {
-        //   create the buffer before using template and check permissions
-        if (!is_admin()) {
-            ob_start();
-            include(__DIR__ . '/../ulubione.php');
-            return ob_get_clean();
-        }
+        wp_enqueue_style('style_ulubione', plugins_url('/assets\style.css', __FILE__));
+        wp_enqueue_script('scripts_ulubione', plugins_url('/assets\main.js', __FILE__));
 
-        $page_title = "Ulubione";
-        $exist_page = get_page_by_title($page_title);
-
-        // check if page exist if not create
-        if ($exist_page === null) {
-            $ulubione_post = array(
-                'post_title' => $page_title,
-                'post_content' => '',
-                'post_status' => 'publish',
-                'post_author' => 1,
-                'post_type' => 'page',
-                'page_template' => 'page-ulubione.php'
-            );
-
-
-            wp_insert_post($ulubione_post);
-        }
     }
-
 
 
 }
 
 $ulubioneSettings = new UlubioneSettings();
 
+class TemplateManager
+{
+    public function init()
+    {
+        add_filter('theme_page_templates', array($this, 'templateRegister'));
+        add_filter('template_include', array($this, 'templateSelect'), 99);
+    }
+    public function templateArray($templates)
+    {
+        $templates['ulubione.php'] = 'ulubione-page';
+        return $templates;
+    }
+
+    public function templateRegister($page_templates)
+    {
+        $templates = $this->templateArray($page_templates);
+        foreach ($templates as $tk => $tv) {
+            $page_templates[$tk] = $tv;
+        }
+        return $page_templates;
+    }
+
+    public function templateSelect($template)
+    {
+        $templates      = $this->templateArray([]);
+        $page_temp_slug = get_page_template_slug(get_the_ID());
+        if (isset($templates[$page_temp_slug])) {
+            $template = plugin_dir_path(__FILE__) . "templates/" . $page_temp_slug;
+        }
+        return $template;
+    }
+    public function display_name_user()
+    {
+        $current_user = wp_get_current_user();
+        printf(__('Ulubione: %s', 'textdomain'), esc_html($current_user->display_name)) . '<br />';
+    }
+}
+
+$templateManager = new TemplateManager();
+$templateManager->init();

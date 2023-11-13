@@ -1,0 +1,26 @@
+:root {
+	---color: #1c2025;
+	--accent: #783f74;
+}
+
+.ulubione-wrapper {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+}
+
+.ulubione-wrapper i {
+	padding: 1rcap;
+	font-size: 1.8rem;
+}
+
+.ulubione-wrapper i:hover {
+	color: var(--accent);
+}
+
+.ulubione-page {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
