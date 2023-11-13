@@ -1,2 +1,10 @@
-# Configuration.
-/Notatki_plugin.md
+# Pliki wygenerowane przez WordPress
+wp-config.php
+wp-content/
+
+# Inne pliki i katalogi
+node_modules/
+vendor/
+
+# Ignoruj Notatki_plugin.md
+Notatki_plugin.mdg
