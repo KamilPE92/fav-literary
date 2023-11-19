@@ -3,21 +3,37 @@
 Plugin Name: Twoje Ulubione 
 Description: Dodawaj/twórz listy ulubionych tekstów na blogu
 Version: 1.0
-Author: Ja Kamil
+Author:  Kamil Pietruszka
 */
 
 class UlubioneSettings
 {
     function __construct()
     {
+        global $wpdb;
+        $this->charset   = $wpdb->get_charset_collate();
+        $this->tablename = $wpdb->prefix . "ulubione";
+
+        register_activation_hook(__FILE__, array($this, 'createTable'));
         add_action('admin_menu', array($this, 'adminPage'));
         add_action('admin_init', array($this, 'registerSettings'));
         add_filter('the_content', array($this, 'ifWrap'));
-
-
         add_action('wp_enqueue_scripts', array($this, 'add_scripts'));
     }
 
+    function createTable()
+    {
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+        dbDelta(" CREATE TABLE $this->tablename (
+        id bigint(20) unsigned NOT NULL,
+        user varchar(60)  NOT NULL,
+        list_type smallInt(5)  NOT NULL, 
+        PRIMARY KEY  (id)
+    ) $this->charset;");
+
+
+    }
     function adminPage()
     {
         add_options_page('Ulubione', 'Ulubione Ustawienia', 'manage_options', 'ulubione-ustawienia', array($this, 'basicHTML'));
@@ -102,6 +118,10 @@ class UlubioneSettings
     {
         wp_enqueue_script('ulubionejs', plugins_url('/assets/main.js', __FILE__));
         wp_enqueue_style('ulubionestyle', plugins_url('/assets/style.css', __FILE__));
+        wp_enqueue_script('axios', 'https://unpkg.com/axios/dist/axios.min.js');
+        wp_enqueue_script('qs', 'https://unpkg.com/qs/dist/qs.js');
+
+
     }
 
 }

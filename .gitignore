@@ -6,5 +6,5 @@ wp-content/
 node_modules/
 vendor/
 
-# Ignoruj Notatki_plugin.md
-Notatki_plugin.mdg
+# Ignoruj Notatki.md
+Notatki.md
