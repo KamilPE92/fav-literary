@@ -1,0 +1,21 @@
+{
+	"name": "fav-literary",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"start": "webpack --config webpack.config.js"
+	},
+	"keywords": [],
+	"author": "Kamil",
+	"license": "MIT",
+	"devDependencies": {
+		"autoprefixer": "^10.4.16",
+		"axios": "^1.6.2",
+		"css-loader": "^6.8.1",
+		"mini-css-extract-plugin": "^2.7.6",
+		"postcss-loader": "^7.3.3",
+		"webpack": "^5.89.0",
+		"webpack-cli": "^5.1.4"
+	}
+}

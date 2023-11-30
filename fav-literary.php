@@ -6,13 +6,11 @@ Version: 1.0
 Author:  Kamil Pietruszka
 */
 
-class UlubioneSettings
-{
-    function __construct()
-    {
+class UlubioneSettings {
+    function __construct() {
         global $wpdb;
         $this->charset   = $wpdb->get_charset_collate();
-        $this->tablename = $wpdb->prefix . "ulubione";
+        $this->tablename = $wpdb->prefix."ulubione";
 
         register_activation_hook(__FILE__, array($this, 'createTable'));
         add_action('admin_menu', array($this, 'adminPage'));
@@ -21,9 +19,8 @@ class UlubioneSettings
         add_action('wp_enqueue_scripts', array($this, 'add_scripts'));
     }
 
-    function createTable()
-    {
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    function createTable() {
+        require_once(ABSPATH.'wp-admin/includes/upgrade.php');
 
         dbDelta(" CREATE TABLE $this->tablename (
         id bigint(20) unsigned NOT NULL,
@@ -34,13 +31,11 @@ class UlubioneSettings
 
 
     }
-    function adminPage()
-    {
+    function adminPage() {
         add_options_page('Ulubione', 'Ulubione Ustawienia', 'manage_options', 'ulubione-ustawienia', array($this, 'basicHTML'));
     }
 
-    function basicHTML()
-    { ?>
+    function basicHTML() { ?>
         <div class="wrap">
             <h1> Ulubione - Ustawienia Wtyczki</h1>
             <form method="POST" action="options.php ">
@@ -54,8 +49,7 @@ class UlubioneSettings
         <?php
     }
 
-    function registerSettings()
-    {
+    function registerSettings() {
         add_settings_section('ulub_location_section', 'Gdzie mają znajdować się Ulubione?', null, 'ulubione-ustawienia');
         add_settings_field('ulub_location', 'Wyświetl lokalizację', array($this, 'locationHtml'), 'ulubione-ustawienia', 'ulub_location_section');
         register_setting('ulubioneplugin', 'ulub_location', array('sanitize_callback' => 'sanitize_text_field', 'default' => '0'));
@@ -70,54 +64,47 @@ class UlubioneSettings
         register_setting('ulubioneplugin', 'ulub_przeczytane', array('sanitize_callback' => 'sanitize_text_field', 'default' => '1'));
     }
 
-    function locationHtml()
-    { ?>
+    function locationHtml() { ?>
         <select name="ulub_location">
             <option value="0" <?php selected(get_option('ulub_location', '0')) ?>> Na końcu wpisu</option>
             <option value="1" <?php selected(get_option('ulub_location', '1')) ?>> Na początku wpisu</option>
         </select>
     <?php }
 
-    function loveCheckbox()
-    { ?>
+    function loveCheckbox() { ?>
         <input name="ulub_dodaj" type="checkbox" value="1" <?php checked(get_option('ulub_dodaj', '1')) ?>>
     <?php }
 
-    function chceCheckbox()
-    { ?>
+    function chceCheckbox() { ?>
         <input name="ulub_chce" type="checkbox" value="1" <?php checked(get_option('ulub_chce', '1')) ?>>
     <?php }
 
-    function przeczytaneCheckbox()
-    { ?>
+    function przeczytaneCheckbox() { ?>
         <input name="ulub_przeczytane" type="checkbox" value="1" <?php checked(get_option('ulub_przeczytane', '1')) ?>>
     <?php }
 
-    function ifWrap($content)
-    {
-        if (is_main_query() and is_single() and (get_option('ulub_dodaj', '1') or get_option('ulub_chce', '1') or get_option('ulub_przeczytane', '1'))) {
+    function ifWrap($content) {
+        if(is_main_query() and is_single() and (get_option('ulub_dodaj', '1') or get_option('ulub_chce', '1') or get_option('ulub_przeczytane', '1'))) {
             return $this->displayHTML($content);
         }
         return $content;
     }
 
 
-    function displayHTML($content)
-    {
+    function displayHTML($content) {
         $html = '<div class="ulubione-wrapper">';
-        $html .= '<i class="fa fa-star" id="icon-star"></i>';
         $html .= '<i class="fa fa-heart" id="icon-heart"></i>';
+        $html .= '<i class="fa fa-bookmark" id="icon-bookmark"></i>';
         $html .= '<i class="fa fa-check" id="icon-check"></i>';
         $html .= '</div>';
 
-        return $content . $html;
+        return $content.$html;
 
     }
 
-    function add_scripts()
-    {
-        wp_enqueue_script('ulubionejs', plugins_url('/assets/main.js', __FILE__));
-        wp_enqueue_style('ulubionestyle', plugins_url('/assets/style.css', __FILE__));
+    function add_scripts() {
+        wp_enqueue_script('ulubionejs', plugins_url('/assets/dist/main.bundle.js', __FILE__));
+        wp_enqueue_style('ulubionestyle', plugins_url('/assets/dist/main.css', __FILE__));
         wp_enqueue_script('axios', 'https://unpkg.com/axios/dist/axios.min.js');
         wp_enqueue_script('qs', 'https://unpkg.com/qs/dist/qs.js');
 
@@ -128,35 +115,30 @@ class UlubioneSettings
 
 $ulubioneSettings = new UlubioneSettings();
 
-class TemplateManager
-{
-    public function templateArray($templates)
-    {
+class TemplateManager {
+    public function templateArray($templates) {
         $templates['ulubione.php'] = 'ulubione-page';
         return $templates;
     }
 
-    public function templateRegister($page_templates)
-    {
+    public function templateRegister($page_templates) {
         $templates = $this->templateArray($page_templates);
-        foreach ($templates as $tk => $tv) {
+        foreach($templates as $tk => $tv) {
             $page_templates[$tk] = $tv;
         }
         return $page_templates;
     }
 
-    public function templateSelect($template)
-    {
+    public function templateSelect($template) {
         $templates      = $this->templateArray([]);
         $page_temp_slug = get_page_template_slug(get_the_ID());
-        if (isset($templates[$page_temp_slug])) {
-            $template = plugin_dir_path(__FILE__) . "templates/" . $page_temp_slug;
+        if(isset($templates[$page_temp_slug])) {
+            $template = plugin_dir_path(__FILE__)."templates/".$page_temp_slug;
         }
         return $template;
     }
 
-    public function init()
-    {
+    public function init() {
         add_filter('theme_page_templates', array($this, 'templateRegister'));
         add_filter('template_include', array($this, 'templateSelect'), 99);
     }
