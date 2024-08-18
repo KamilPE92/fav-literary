@@ -3,6 +3,12 @@
 	--accent: #783f74;
 }
 
+button {
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+}
+
 .ulubione-wrapper {
 	display: flex;
 	justify-content: center;
