@@ -8,7 +8,7 @@ function ulubioneRoutes() {
 		'sendUlub',
 		array(
 			'methods' => 'POST',
-			'callback' => 'addPost',
+			'callback' => 'createPost',
 		)
 	);
 	register_rest_route(
@@ -20,12 +20,34 @@ function ulubioneRoutes() {
 		)
 	);
 
-	function addPost() {
-		return 'Dzięki za próbę dodania wpisu z OGP z pliku';
+	function createPost( $data ) {
+		$original_post_id   = absint( $data->get_param( 'original_post_id' ) );
+		$post               = get_post( $original_post_id );
+		$favorite_list_type = absint( $data->get_param( 'list-type' ) );
+		$favorite_post_id   = wp_insert_post( [ 
+			'post_title' => $post->post_title,
+			'post_content' => $post->post_content,
+			'post_type' => 'ulubione',
+			'post_status' => 'publish',
 
+			'meta_input' => [ 
+				'favorite_post_id' => $original_post_id,
+				'favorite_list_type' => $favorite_list_type
+			]
+		] );
+		return [ 
+			'success' => true,
+			'favorite_post_id' => (int) $favorite_post_id,
+			'original_post_id' => (int) $original_post_id,
+			'list_type' => $favorite_list_type,
+		];
 	}
-	function deletePost() {
-		return 'Dzięki za próbę usunięcia wpisu z OGP z pliku';
 
+
+	function deletePost( $data ) { { {
+				return " Colplwiek";
+			}
+		}
 	}
+
 }

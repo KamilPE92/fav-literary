@@ -8,29 +8,14 @@ Author:  Kamil Pietruszka
 
 class UlubioneSettings {
 	function __construct() {
-		global $wpdb;
-		$this->charset   = $wpdb->get_charset_collate();
-		$this->tablename = $wpdb->prefix . "ulubione";
 
-		register_activation_hook( __FILE__, array( $this, 'createTable' ) );
 		add_action( 'admin_menu', array( $this, 'adminPage' ) );
 		add_action( 'admin_init', array( $this, 'registerSettings' ) );
 		add_filter( 'the_content', array( $this, 'ifWrap' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'add_scripts' ) );
+		add_action( 'init', array( $this, 'RegisterPostTypeUlubione' ) );
 	}
 
-	function createTable() {
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
-		dbDelta( " CREATE TABLE $this->tablename (
-        id bigint(20) unsigned NOT NULL,
-        user varchar(60)  NOT NULL,
-        list_type smallInt(5)  NOT NULL, 
-        PRIMARY KEY  (id)
-    ) $this->charset;" );
-
-
-	}
 	function adminPage() {
 		add_options_page( 'Ulubione', 'Ulubione Ustawienia', 'manage_options', 'ulubione-ustawienia', array( $this, 'basicHTML' ) );
 	}
@@ -94,22 +79,18 @@ class UlubioneSettings {
 
 
 	function displayHTML( $content ) {
-		$html = '
-				<div data-exists="no" id="ULUBIONE" class="ulubione-wrapper">
-			<button data-list-type="0" class="ulub icon-heart">
+		ob_start();
+		?>
+		<div data-exists="no" id="ULUBIONE" class="ulubione-wrapper">
+			<button class="ulub" data-list-type=0 data-original-post-id="<?php the_ID(); ?>">
 				<i class="fa fa-heart"></i>
 			</button>
-			<button data-list-type="1" class="ulub icon-bookmark">
-				<i class="fa fa-bookmark"></i>
-			</button>
-			<button data-list-type="2" class="ulub icon-check">
-				<i class="fa fa-check"></i>
-			</button>
+			<button data-favID="<?php the_ID(); ?>" data-list-type=1 class="ulub icon-bookmark"> <i class="fa fa-bookmark"></i>
+			</button> <button data-favID="<?php the_ID(); ?>" data-list-type=2 class="ulub icon-check"> <i
+					class="fa fa-check"></i>
 		</div>
-
-    ';
-
-		return $content . $html;
+		<?php
+		return $content . ob_get_clean();
 	}
 	function add_scripts() {
 		wp_enqueue_script( 'ulubionejs', plugins_url( '/assets/dist/main.bundle.js', __FILE__ ) );
@@ -118,6 +99,36 @@ class UlubioneSettings {
 		wp_enqueue_script( 'qs', 'https://unpkg.com/qs/dist/qs.js' );
 
 
+	}
+
+	function RegisterPostTypeUlubione() {
+		register_post_type( 'Ulubione', array(
+			'public' => true,
+			'labels' => array(
+				'name' => 'Ulubione',
+			),
+			'menu_icon' => 'dashicons-heart',
+			'supports' => array( 'title', 'editor', 'thumbnail' ),
+			'show_in_rest' => true,
+		) );
+		register_post_type( 'Chcę Przeczytać', array(
+			'public' => true,
+			'labels' => array(
+				'name' => 'Chcę Przeczytać',
+			),
+			'menu_icon' => 'dashicons-bookmark',
+			'supports' => array( 'title', 'editor', 'thumbnail' ),
+			'show_in_rest' => true,
+		) );
+		register_post_type( 'Przeczytane', array(
+			'public' => true,
+			'labels' => array(
+				'name' => 'Przeczytane',
+			),
+			'menu_icon' => 'dashicons-yes',
+			'supports' => array( 'title', 'editor', 'thumbnail' ),
+			'show_in_rest' => true,
+		) );
 	}
 
 }

@@ -1,10 +1,12 @@
 import axios from "axios";
+
 const localAddress = window.location.origin;
 
 class Ulubione {
 	constructor() {
 		this.setupEvents();
 	}
+
 	setupEvents() {
 		document.addEventListener("DOMContentLoaded", () => {
 			document.querySelectorAll(".ulub").forEach((button) => {
@@ -14,32 +16,61 @@ class Ulubione {
 			});
 		});
 	}
+
 	async clickUlubhendler(e) {
 		e.preventDefault();
-		let currebtClicked = e.target.parentElement;
-		currebtClicked.classList.toggle("exist");
-		console.log(currebtClicked);
-		if (currebtClicked.classList.contains("exist")) {
-			this.createPost(currebtClicked);
+
+		let currentClicked = e.target.closest("button");
+		currentClicked.classList.toggle("exist");
+
+		if (currentClicked.classList.contains("exist")) {
+			await this.createPost(currentClicked);
 		} else {
-			this.deletePost();
+			await this.deletePost(currentClicked);
 		}
 	}
-	async createPost(currebtClicked) {
+
+	async createPost(currentClicked) {
 		try {
 			const response = await axios.post(
 				localAddress + "/wp-json/ulub/v1/sendUlub",
-				{ listType: currebtClicked.getAttribute("data-list-type") }
+				{
+					list_type: currentClicked.getAttribute("data-list-type"),
+					original_post_id: currentClicked.getAttribute(
+						"data-original-post-id"
+					),
+				}
 			);
-			console.log(response);
+			currentClicked.setAttribute("");
 		} catch {
-			console.log("sorry");
+			console.error("Coś poszło Mucho Grande nie tak");
 		}
 	}
-	deletePost() {
-		alert("Usuwaj");
+
+	async deletePost(currentClicked) {
+		const favId = currentClicked.getAttribute("");
+		if (favId) {
+			currentClicked.setAttribute("data-ulubione-", favId);
+			console.log("Udało się wygenerować unikalne ID");
+		} else {
+			console.log("Nie wygenerowano nowegoID");
+		}
+		try {
+			const response = await axios.delete(
+				localAddress + "/wp-json/ulub/v1/sendUlub",
+				{
+					data: {
+						list_type:
+							currentClicked.getAttribute("data-list-type"),
+						favorite_post_id:
+							currentClicked.getAttribute("favorite_post_id"),
+					},
+				}
+			);
+		} catch (error) {
+			console.error(error);
+			console.warn("Brak data-ulubione-id – nie wiem co usunąć");
+		}
 	}
 }
-
 new Ulubione();
-console.log(localAddress);
