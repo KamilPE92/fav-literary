@@ -45,8 +45,8 @@ function ulubioneRoutes() {
 
 
 	function deletePost( $data ) { { {
-				return " Colplwiek";
 			}
+			// todoDopisz funkcję, która usunie wp_delete post czy jakoś tak
 		}
 	}
 

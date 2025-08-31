@@ -14,14 +14,19 @@ button {
 
 .ulubione-wrapper {
 	display: flex;
-	justify-content: center;
-	align-items: center;
 	cursor: pointer;
+	justify-content: center;
+	i {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
 }
 
 .ulubione-wrapper i {
-	padding: 1rcap;
+	margin-inline: 0.5rem;
 	font-size: 1.8rem;
+	padding: 1rem;
 }
 
 .ulubione-wrapper i:hover {

@@ -82,12 +82,14 @@ class UlubioneSettings {
 		ob_start();
 		?>
 		<div data-exists="no" id="ULUBIONE" class="ulubione-wrapper">
-			<button class="ulub" data-list-type=0 data-original-post-id="<?php the_ID(); ?>">
+			<button title="Ulubione" class="ulub" data-list-type=0 data-original-post-id="<?php the_ID(); ?>">
 				<i class="fa fa-heart"></i>
 			</button>
-			<button data-favID="<?php the_ID(); ?>" data-list-type=1 class="ulub icon-bookmark"> <i class="fa fa-bookmark"></i>
-			</button> <button data-favID="<?php the_ID(); ?>" data-list-type=2 class="ulub icon-check"> <i
-					class="fa fa-check"></i>
+			<button title="Chcę przeczytać" data-favID="<?php the_ID(); ?>" data-list-type=1 class="ulub icon-bookmark"> <i
+					class="fa fa-bookmark"></i>
+			</button>
+			<button title="Przeczytane" data-favID="<?php the_ID(); ?>" data-list-type=2 class="ulub icon-check"> <i
+					class="fa fa-check"></i> </button>
 		</div>
 		<?php
 		return $content . ob_get_clean();
